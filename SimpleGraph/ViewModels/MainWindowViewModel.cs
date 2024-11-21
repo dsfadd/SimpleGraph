@@ -107,8 +107,6 @@ namespace SimpleGraph.ViewModels
      if (!TickerDepthMessage.TryParse(message)) return;
          
              var parsedMessage = TickerDepthMessage.Parse(message);
-             lock (_lock)
-             {
                  if (AskValues.Count >= SelectedTick)
                  {
                      AskValues.RemoveAt(0);
@@ -126,7 +124,6 @@ namespace SimpleGraph.ViewModels
                      BidValues.Add(parsedMessage.BidPrice);
                      customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
                  }
-             }
  }
 
         private void ClearLineSeriesValues()
