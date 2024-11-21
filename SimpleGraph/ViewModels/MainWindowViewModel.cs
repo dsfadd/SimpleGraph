@@ -103,35 +103,31 @@ namespace SimpleGraph.ViewModels
         }
 
         private void BinanceWSS_OnMessageReceived(string message, DateTime receivedTime)
-        {
-            Task.Run(() =>
-            {
-                if (TickerDepthMessage.TryParse(message))
-                {
-                    var parsedMessage = TickerDepthMessage.Parse(message);
-                    lock (_lock)
-                    {
-                        if (AskValues.Count > SelectedTick)
-                        {
-                            AskValues.RemoveAt(0);
-                            AskValues.Add(parsedMessage.AskPrice);
+ {
+     if (!TickerDepthMessage.TryParse(message)) return;
+         
+             var parsedMessage = TickerDepthMessage.Parse(message);
+             lock (_lock)
+             {
+                 if (AskValues.Count > SelectedTick)
+                 {
+                     AskValues.RemoveAt(0);
+                     AskValues.Add(parsedMessage.AskPrice);
 
-                            BidValues.RemoveAt(0);
-                            BidValues.Add(parsedMessage.BidPrice);
+                     BidValues.RemoveAt(0);
+                     BidValues.Add(parsedMessage.BidPrice);
 
-                            customAxis.Labels.RemoveAt(0);
-                            customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
-                        }
-                        else
-                        {
-                            AskValues.Add(parsedMessage.AskPrice);
-                            BidValues.Add(parsedMessage.BidPrice);
-                            customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
-                        }
-                    }
-                }
-            });
-        }
+                     customAxis.Labels.RemoveAt(0);
+                     customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
+                 }
+                 else
+                 {
+                     AskValues.Add(parsedMessage.AskPrice);
+                     BidValues.Add(parsedMessage.BidPrice);
+                     customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
+                 }
+             }
+ }
 
         private void ClearLineSeriesValues()
         {
