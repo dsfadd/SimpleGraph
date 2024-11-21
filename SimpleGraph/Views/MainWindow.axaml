@@ -48,7 +48,7 @@
 						<Setter Property="BorderBrush" Value="Black" />
 						<Setter Property="Background" Value="White" />
 						<Setter Property="Foreground" Value="Black" />
-						<Setter Property="Command" Value="{Binding Disconnect}" />
+						<Setter Property="Command" Value="{Binding Connect}" />
 					</Style>
 
 					<Style Selector="ToggleButton:checked">
@@ -56,7 +56,7 @@
 						<Setter Property="BorderBrush" Value="Black" />
 						<Setter Property="Background" Value="Red" />
 						<Setter Property="Foreground" Value="White" />
-						<Setter Property="Command" Value="{Binding Connect}" />
+						<Setter Property="Command" Value="{Binding Disconnect}" />
 					</Style>
 				</ToggleButton.Styles>
 			</ToggleButton>
