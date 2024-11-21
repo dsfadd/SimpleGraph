@@ -109,7 +109,7 @@ namespace SimpleGraph.ViewModels
              var parsedMessage = TickerDepthMessage.Parse(message);
              lock (_lock)
              {
-                 if (AskValues.Count > SelectedTick)
+                 if (AskValues.Count >= SelectedTick)
                  {
                      AskValues.RemoveAt(0);
                      AskValues.Add(parsedMessage.AskPrice);
