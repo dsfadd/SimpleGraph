@@ -24,8 +24,8 @@
 		</Grid.RowDefinitions>
 
 		<lvc:CartesianChart
+			SyncContext="{Binding Sync}"
 			XAxes="{Binding XAxes}"
-
 				Grid.Row="1"
 				Series="{Binding Series}" />
 
