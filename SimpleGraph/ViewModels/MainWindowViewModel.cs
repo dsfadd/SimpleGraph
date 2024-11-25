@@ -1,4 +1,4 @@
-﻿using LiveChartsCore;
+using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SimpleGraph.Models;
@@ -13,6 +13,7 @@ namespace SimpleGraph.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
+        public object Sync { get; } = new object();
         public Axis[] XAxes { get; set; }
         private ObservableCollection<double> _askValues;
 
@@ -48,7 +49,7 @@ namespace SimpleGraph.ViewModels
             }
             set
             {
-                lock (_lock1)
+                lock (_lock)
                 {
                     _bidValues = value;
                 }
@@ -103,28 +104,31 @@ namespace SimpleGraph.ViewModels
         }
 
         private void BinanceWSS_OnMessageReceived(string message, DateTime receivedTime)
- {
-     if (!TickerDepthMessage.TryParse(message)) return;
-         
-             var parsedMessage = TickerDepthMessage.Parse(message);
-                 if (AskValues.Count >= SelectedTick)
-                 {
-                     AskValues.RemoveAt(0);
-                     AskValues.Add(parsedMessage.AskPrice);
+        {
+            if (!TickerDepthMessage.TryParse(message)) return;
 
-                     BidValues.RemoveAt(0);
-                     BidValues.Add(parsedMessage.BidPrice);
+            var parsedMessage = TickerDepthMessage.Parse(message);
+            lock (Sync)
+            {
+                if (AskValues.Count >= SelectedTick)
+                {
+                    AskValues.RemoveAt(0);
+                    AskValues.Add(parsedMessage.AskPrice);
 
-                     customAxis.Labels.RemoveAt(0);
-                     customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
-                 }
-                 else
-                 {
-                     AskValues.Add(parsedMessage.AskPrice);
-                     BidValues.Add(parsedMessage.BidPrice);
-                     customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
-                 }
- }
+                    BidValues.RemoveAt(0);
+                    BidValues.Add(parsedMessage.BidPrice);
+
+                    customAxis.Labels.RemoveAt(0);
+                    customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
+                }
+                else
+                {
+                    AskValues.Add(parsedMessage.AskPrice);
+                    BidValues.Add(parsedMessage.BidPrice);
+                    customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
+                }
+            }
+        }
 
         private void ClearLineSeriesValues()
         {
@@ -141,20 +145,20 @@ namespace SimpleGraph.ViewModels
             var cancellationToken = _cancellationTokenSource.Token;
 
             Task.Run(async () =>
-          {
-              BinanceWebSocketService binanceWSS = new BinanceWebSocketService();
-              try
-              {
-                  binanceWSS.MessageReceived += BinanceWSS_OnMessageReceived;
-                  await binanceWSS.ConnectAsync();
-                  await binanceWSS.SubscribeAsync(SelectedTicker);
-                  await binanceWSS.ReceiveMessagesAsync(cancellationToken);
-              }
-              catch
-              {
-                  binanceWSS.Dispose();
-              }
-          }, CancellationToken.None);
+            {
+                BinanceWebSocketService binanceWSS = new BinanceWebSocketService();
+                try
+                {
+                    binanceWSS.MessageReceived += BinanceWSS_OnMessageReceived;
+                    await binanceWSS.ConnectAsync();
+                    await binanceWSS.SubscribeAsync(SelectedTicker);
+                    await binanceWSS.ReceiveMessagesAsync(cancellationToken);
+                }
+                catch
+                {
+                    binanceWSS.Dispose();
+                }
+            }, CancellationToken.None);
         }
 
         public void Disconnect()
