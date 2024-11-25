@@ -110,21 +110,21 @@ namespace SimpleGraph.ViewModels
             var parsedMessage = TickerDepthMessage.Parse(message);
             lock (Sync)
             {
-                if (AskValues.Count >= SelectedTick)
+                if (_askValues.Count >= SelectedTick)
                 {
-                    AskValues.RemoveAt(0);
-                    AskValues.Add(parsedMessage.AskPrice);
+                    _askValues.RemoveAt(0);
+                    _askValues.Add(parsedMessage.AskPrice);
 
-                    BidValues.RemoveAt(0);
-                    BidValues.Add(parsedMessage.BidPrice);
+                    _bidValues.RemoveAt(0);
+                    _bidValues.Add(parsedMessage.BidPrice);
 
                     customAxis.Labels.RemoveAt(0);
                     customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
                 }
                 else
                 {
-                    AskValues.Add(parsedMessage.AskPrice);
-                    BidValues.Add(parsedMessage.BidPrice);
+                    _askValues.Add(parsedMessage.AskPrice);
+                    _bidValues.Add(parsedMessage.BidPrice);
                     customAxis.Labels.Add(receivedTime.ToString("HH:mm:ss.fff"));
                 }
             }
