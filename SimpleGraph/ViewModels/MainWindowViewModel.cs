@@ -134,8 +134,8 @@ namespace SimpleGraph.ViewModels
         {
             if (BidValues.Count >= 1)
             {
-                AskValues.Clear();
-                BidValues.Clear();
+                _askValues.Clear();
+                _bidValues.Clear();
                 customAxis.Labels.Clear();
             }
         }
